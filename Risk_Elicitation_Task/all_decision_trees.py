@@ -434,7 +434,7 @@ if __name__ == '__main__':
     
     
     # Set up processes
-    ctx = mp.get_context('fork')
+    ctx = mp.get_context('spawn')
     iq = ctx.Queue()
     oq = ctx.Queue()
     procs = [ctx.Process(target=task, args=(iq, oq, bps, ), daemon=True) for _ in range(mp.cpu_count())]
