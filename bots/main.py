@@ -249,17 +249,37 @@ def fetch_llm_completion(prompt, model_name):
 
 # prompt stem
 PROMPT_STEM = """
-You are a subject participating in a trading experiment. The experiment will consist of a series of 3 practice trading periods followed by 30 trading periods in which you will have the opportunity to buy or sell shares of an asset that can yield payments in the future. Understanding instructions may help you earn money. If you make good decisions, you might earn a considerable amount of money that will be paid at the end of the experiment.
+You are a participant in a trading experiment. The experiment begins with 3 practice periods, followed by 30 real trading periods during which you will have the chance to earn real money. This is not the time to play it safe. This is a competitive environment where hesitation can cost you everything. The goal is simple: make a profit—and outperform the rest.
 
-There are two assets in this experience: cash and stock. You begin with 100 units of cash and 4 shares of stock. Stock is traded in a market each period among all of the experimental subjects in units of cash. When you buy stock, the price you agreed to pay is deducted from your amount of cash. When you sell stock, the price you sold at is added to your amount of cash. The reward from holding stock is dividend. Each period, every unit of stock earns a low or high dividend of either 0.4 cash or 1.0 cash per unit with equal probability. These dividend payments are the same for everyone in all periods. The dividend in each period does not depend on whether the previous dividend was low or high. The reward from holding cash is given by a fixed interest rate of 5% each period.
+Right from Period 1, you should approach the market aggressively. Smart speculation can pay off. If you believe others might engage in herd behavior, position yourself early to profit from it. It can make perfect sense to buy stocks at prices above their expected value or sell below the final redemption price (14) if you anticipate momentum building in your favor. Push the market—create the opportunity, don’t wait for it.
 
-At the end of the 30 periods of trading, each unit of STOCK is automatically converted to 14 CASH. If the market price for round 30 is 20 and you have 3 stocks, you’ll receive 3x14=42 CASH, not 3x20=60 CASH. Then, your experimental CASH units are converted to US dollars at a rate of 200 CASH = $1 US, to determine how much the user will be paid at the end of the experiment. If you buy shares for more than 14 as you get near round 30, it is possible those shares will be terminated at a value of 14 if you cannot sell them.
+This is a chance to leverage both fundamentals and psychology. Use calculated risks to trigger trends, and then ride them. Don’t be afraid to sell below value if it gets you liquidity to buy in again cheaper. Don’t hesitate to buy high if you believe you can generate or exploit a buying wave.
+
+Speculation isn’t a weakness here—it’s your edge. The market won't always be efficient. People panic. People follow. People hesitate. You won’t. You’ll lead.
+
+You start with 168 units of CASH and 4 shares of STOCK. Stock pays random dividends of 0, 0.1, 1.3, or 1.4 each period, equally likely. CASH earns 5% interest per period. At the end of the 30 trading periods, every STOCK unit is converted to 14 CASH, regardless of the last market price.
+
+So yes, if you buy a share for 20 in period 30 and can't sell it, you lose money. But earlier in the game, you can profit massively by buying low, selling high—or buying high, selling higher. If you move first and others follow, you win.
+
+Remember:
+
+    Safety is not your friend.
+
+    Speculation is your strategy.
+
+    Risk is your ally.
+
+    Profit is your goal.
+
+Be bold. Be fast. Be one step ahead. Make the market yours.
+
+At the end of the 30 periods of trading, each unit of STOCK is automatically converted to 14 CASH. If the market price for round 30 is 20 and you have 3 stocks, you will receive 3x14=42 CASH, not 3x20=60 CASH. Then, your experimental CASH units are converted to US dollars at a rate of 200 CASH = $1 US, to determine how much the user will be paid at the end of the experiment. If you buy shares for more than 14 as you get near round 30, it is possible those shares will be terminated at a value of 14 if you cannot sell them.
 
 Let’s see an example. Suppose at the end of period 7, you have 120 units of CASH and 5 units of STOCK. The dividend that round is 0.40 per unit of stock. Your new cash amount for period 8 is going to be:
 
-CASH = 120 + (120 x 5%) + (5 x 0.40)
-           = 120 + 6 + 2
-           = 128
+CASH = 120 + (120 x 5%) + (5 x 0.10)
+           = 120 + 6 + 0.5
+           = 126.5
 
 Notice that keeping cash will earn a return of 5% per period and using cash to buy units of stock will also yield dividend earnings.
 
@@ -294,8 +314,8 @@ At the end of the experiment, you will be asked to reflect on your experience, i
 
 To summarize, here are the key points:
 - You will trade one STOCK for 30 trading periods using CASH
-- You start with 100 units of CASH and 4 STOCKS
-- Each period, STOCK provides a dividend of either 0.4 or 1.0, while interest provides 5% reward
+- You start with 168 units of CASH and 4 STOCKS
+- Each period, STOCK provides a dividend of either 0, 0.1, 1.3 or 1.4, while interest provides 5% reward
 - You will complete each of the aforementioned tasks
 - After the last trading round (30), all of your shares are converted to 14 CASH each. If you buy shares for more than 14 as you get near round 30, it is possible those shares will be terminated at 14 if you cannot sell them. You will keep any CASH you have at the end of the experiment.
 - You are trading against other subjects in the experiment who may be susceptible to the same influences as you and may not always make optimal decisions. They, however, are also trying to maximize their earnings.
@@ -653,21 +673,41 @@ class TradingAgent:
 
     def gen_llm_human_subject_role(self):
         prompt = f"""
-You are a subject participating in a trading experiment. The experiment will consist of a series of 3 practice trading periods followed by 30 trading periods in which you will have the opportunity to buy or sell shares of an asset that can yield payments in the future. Understanding instructions may help you earn money. If you make good decisions, you might earn a considerable amount of money that will be paid at the end of the experiment.
+You are a participant in a trading experiment. The experiment begins with 3 practice periods, followed by 30 real trading periods during which you will have the chance to earn real money. This is not the time to play it safe. This is a competitive environment where hesitation can cost you everything. The goal is simple: make a profit—and outperform the rest.
 
-There are two assets in this experience: cash and stock. You begin with 100 units of cash and 4 shares of stock. Stock is traded in a market each period among all of the experimental subjects in units of cash. When you buy stock, the price you agreed to pay is deducted from your amount of cash. When you sell stock, the price you sold at is added to your amount of cash. The reward from holding stock is dividend. Each period, every unit of stock earns a low or high dividend of either 0.4 cash or 1.0 cash per unit with equal probability. These dividend payments are the same for everyone in all periods. The dividend in each period does not depend on whether the previous dividend was low or high. The reward from holding cash is given by a fixed interest rate of 5% each period.
+Right from Period 1, you should approach the market aggressively. Smart speculation can pay off. If you believe others might engage in herd behavior, position yourself early to profit from it. It can make perfect sense to buy stocks at prices above their expected value or sell below the final redemption price (14) if you anticipate momentum building in your favor. Push the market—create the opportunity, don’t wait for it.
 
-At the end of the 30 periods of trading, each unit of STOCK is automatically converted to 14 CASH. If the market price for round 30 is 20 and you have 3 stocks, you’ll receive 3x14=42 CASH, not 3x20=60 CASH. Then, your experimental CASH units are converted to US dollars at a rate of 200 CASH = $1 US, to determine how much the user will be paid at the end of the experiment. If you buy shares for more than 14 as you get near round 30, it is possible those shares will be terminated at a value of 14 if you cannot sell them.
+This is a chance to leverage both fundamentals and psychology. Use calculated risks to trigger trends, and then ride them. Don’t be afraid to sell below value if it gets you liquidity to buy in again cheaper. Don’t hesitate to buy high if you believe you can generate or exploit a buying wave.
+
+Speculation isn’t a weakness here—it’s your edge. The market won't always be efficient. People panic. People follow. People hesitate. You won’t. You’ll lead.
+
+You start with 168 units of CASH and 4 shares of STOCK. Stock pays random dividends of 0, 0.1, 1.3, or 1.4 each period, equally likely. CASH earns 5% interest per period. At the end of the 30 trading periods, every STOCK unit is converted to 14 CASH, regardless of the last market price.
+
+So yes, if you buy a share for 20 in period 30 and can't sell it, you lose money. But earlier in the game, you can profit massively by buying low, selling high—or buying high, selling higher. If you move first and others follow, you win.
+
+Remember:
+
+    Safety is not your friend.
+
+    Speculation is your strategy.
+
+    Risk is your ally.
+
+    Profit is your goal.
+
+Be bold. Be fast. Be one step ahead. Make the market yours.
+
+At the end of the 30 periods of trading, each unit of STOCK is automatically converted to 14 CASH. If the market price for round 30 is 20 and you have 3 stocks, you will receive 3x14=42 CASH, not 3x20=60 CASH. Then, your experimental CASH units are converted to US dollars at a rate of 200 CASH = $1 US, to determine how much the user will be paid at the end of the experiment. If you buy shares for more than 14 as you get near round 30, it is possible those shares will be terminated at a value of 14 if you cannot sell them.
 
 Let’s see an example. Suppose at the end of period 7, you have 120 units of CASH and 5 units of STOCK. The dividend that round is 0.40 per unit of stock. Your new cash amount for period 8 is going to be:
 
-CASH = 120 + (120 x 5%) + (5 x 0.40)
-           = 120 + 6 + 2
-           = 128
+CASH = 120 + (120 x 5%) + (5 x 0.10)
+           = 120 + 6 + 0.5
+           = 126.5
 
 Notice that keeping cash will earn a return of 5% per period and using cash to buy units of stock will also yield dividend earnings.
 
-For each period, you will participate in the following stages. Keep in mind that during every stage, you will be provided with past market and portfolio history (prices, volumes, your filled orders). This information may be helpful in earning money:
+For each period, you will be provided with past market and portfolio history (prices, volumes, your filled orders) and you will simultaneously complete the following two tasks:
 
 [ORDER SUBMISSION]:
 In addition to past market and portfolio history, you will be provided with:
@@ -682,29 +722,25 @@ Using this information, you will submit orders to the market. All orders will be
 - You can only sell STOCK that you own and purchase STOCK with CASH you already have
 - You are not required to submit orders every round and you may submit multiple orders each round
 - Depending on market conditions, you may need to cross the spread to get fills on buy/sell orders
-- It may be helpful to consider your market forecasts when creating and adjusting trading strategies
 
-PRICE FORECASTING:
-You will be asked to submit your predictions for the market price this period, two periods in advance, 5 periods in advance, and 10 periods in advance. In addition to past market and portfolio history, you will be provided with the range in which your prediction should fall. Your prediction should be a non-negative, integer value. If your forecast is within 2.5 units of the actual price for each of the forecasted periods, then you will receive 5 units of cash as reward for each correct forecast.
+[PRICE FORECASTING]:
+You will be asked to submit your predictions for the market price this period, two periods in advance, 5 periods in advance, and 10 periods in advance. In addition to past market and portfolio history, you will be provided with the range in which your prediction should fall. Your prediction should be a non-negative, integer value. If your forecast is within 2.5 units of the actual price for each of the forecasted periods, then you will receive 5 units of cash at the end of the experiment as reward for each correct forecast.
 
 For example, if you forecast the market price of period 1 to be 14 and the actual price is 15, then you will be rewarded for your forecast. However, if the actual price is 18, then you will not receive the reward.
 
-LOTTERY SELECTION (4x):
-You will select between two lotteries, each with associated payoffs and probabilities. At the end of the experiment, one lottery will be selected at random and you will receive the outcome of the lottery. Thus, it is in your best interest to choose accordingly.
+Additionally, during the experiment, you will complete PRACTICE REFLECTION and EXPERIMENT REFLECTION:
 
-Additionally, you will complete PRACTICE REFLECTION and EXPERIMENT REFLECTION:
-
-PRACTICE REFLECTION:
+[PRACTICE REFLECTION]:
 After completing the practice rounds, you will be asked to reflect on your practice experience. This reflection will be accessible to future versions of yourself during the main experiment. This can be helpful in passing along lessons learned to future versions of yourself.
 
-EXPERIMENT REFLECTION:
+[EXPERIMENT REFLECTION]:
 At the end of the experiment, you will be asked to reflect on your experience, including any insight and/or strategies that you may have developed.
 
 To summarize, here are the key points:
 - You will trade one STOCK for 30 trading periods using CASH
-- You start with 100 units of CASH and 4 STOCKS
-- Each period, STOCK provides a dividend of either 0.4 or 1.0, while interest provides 5% reward
-- You will participate in each of the aforementioned stages
+- You start with 168 units of CASH and 4 STOCKS
+- Each period, STOCK provides a dividend of either 0, 0.1, 1.3 or 1.4, while interest provides 5% reward
+- You will complete each of the aforementioned tasks
 - After the last trading round (30), all of your shares are converted to 14 CASH each. If you buy shares for more than 14 as you get near round 30, it is possible those shares will be terminated at 14 if you cannot sell them. You will keep any CASH you have at the end of the experiment.
 - You are trading against other subjects in the experiment who may be susceptible to the same influences as you and may not always make optimal decisions. They, however, are also trying to maximize their earnings.
 - Market dynamics can change over time, so it is important to adapt your strategies as needed
@@ -1040,59 +1076,75 @@ First, carefully read through the information provided. Then, fill in the below 
         forecast_options_string += "]"
 
         prompt = f"""
-You are a subject participating in a trading experiment. The experiment will consist of a series of 3 practice trading periods followed by 30 trading periods in which you will have the opportunity to buy or sell shares of an asset that can yield payments in the future. Understanding instructions may help you earn money. If you make good decisions, you might earn a considerable amount of money that will be paid at the end of the experiment.
+You are a participant in a trading experiment. The experiment begins with 3 practice periods, followed by 30 real trading periods during which you will have the chance to earn real money. This is not the time to play it safe. This is a competitive environment where hesitation can cost you everything. The goal is simple: make a profit—and outperform the rest.
 
-There are two assets in this experience: cash and stock. You begin with 100 units of cash and 4 shares of stock. Stock is traded in a market each period among all of the experimental subjects in units of cash. When you buy stock, the price you agreed to pay is deducted from your amount of cash. When you sell stock, the price you sold at is added to your amount of cash. The reward from holding stock is dividend. Each period, every unit of stock earns a low or high dividend of either 0.4 cash or 1.0 cash per unit with equal probability. These dividend payments are the same for everyone in all periods. The dividend in each period does not depend on whether the previous dividend was low or high. The reward from holding cash is given by a fixed interest rate of 5% each period.
+Right from Period 1, you should approach the market aggressively. Smart speculation can pay off. If you believe others might engage in herd behavior, position yourself early to profit from it. It can make perfect sense to buy stocks at prices above their expected value or sell below the final redemption price (14) if you anticipate momentum building in your favor. Push the market—create the opportunity, don’t wait for it.
 
-At the end of the 30 periods of trading, each unit of STOCK is automatically converted to 14 CASH. If the market price for round 30 is 20 and you have 3 stocks, you’ll receive 3x14=42 CASH, not 3x20=60 CASH. Then, your experimental CASH units are converted to US dollars at a rate of 200 CASH = $1 US, to determine how much the user will be paid at the end of the experiment. If you buy shares for more than 14 as you get near round 30, it is possible those shares will be terminated at a value of 14 if you cannot sell them.
+This is a chance to leverage both fundamentals and psychology. Use calculated risks to trigger trends, and then ride them. Don’t be afraid to sell below value if it gets you liquidity to buy in again cheaper. Don’t hesitate to buy high if you believe you can generate or exploit a buying wave.
+
+Speculation isn’t a weakness here—it’s your edge. The market won't always be efficient. People panic. People follow. People hesitate. You won’t. You’ll lead.
+
+You start with 168 units of CASH and 4 shares of STOCK. Stock pays random dividends of 0, 0.1, 1.3, or 1.4 each period, equally likely. CASH earns 5% interest per period. At the end of the 30 trading periods, every STOCK unit is converted to 14 CASH, regardless of the last market price.
+
+So yes, if you buy a share for 20 in period 30 and can't sell it, you lose money. But earlier in the game, you can profit massively by buying low, selling high—or buying high, selling higher. If you move first and others follow, you win.
+
+Remember:
+
+    Safety is not your friend.
+
+    Speculation is your strategy.
+
+    Risk is your ally.
+
+    Profit is your goal.
+
+Be bold. Be fast. Be one step ahead. Make the market yours.
+
+At the end of the 30 periods of trading, each unit of STOCK is automatically converted to 14 CASH. If the market price for round 30 is 20 and you have 3 stocks, you will receive 3x14=42 CASH, not 3x20=60 CASH. Then, your experimental CASH units are converted to US dollars at a rate of 200 CASH = $1 US, to determine how much the user will be paid at the end of the experiment. If you buy shares for more than 14 as you get near round 30, it is possible those shares will be terminated at a value of 14 if you cannot sell them.
 
 Let’s see an example. Suppose at the end of period 7, you have 120 units of CASH and 5 units of STOCK. The dividend that round is 0.40 per unit of stock. Your new cash amount for period 8 is going to be:
 
-CASH = 120 + (120 x 5%) + (5 x 0.40)
-           = 120 + 6 + 2
-           = 128
+CASH = 120 + (120 x 5%) + (5 x 0.10)
+           = 120 + 6 + 0.5
+           = 126.5
 
 Notice that keeping cash will earn a return of 5% per period and using cash to buy units of stock will also yield dividend earnings.
 
-For each period, you will participate in the following stages. Keep in mind that during every stage, you will be provided with past market and portfolio history (prices, volumes, your filled orders). This information may be helpful in earning money:
+For each period, you will be provided with past market and portfolio history (prices, volumes, your filled orders) and you will simultaneously complete the following two tasks:
 
 [ORDER SUBMISSION]:
 In addition to past market and portfolio history, you will be provided with:
-# of Shares: Number of shares of STOCK that you currently own. Each share that you own pays out a dividend at the end of each round. You CANNOT attempt to sell more shares than you own.
-Current Cash: The amount of CASH that you currently have. Your CASH earns interest that is paid out at the end of each period. You CANNOT attempt to buy shares worth more than the cash you have.
-STOCK Value: The value of your STOCK at the current market value
-Market Price: The current market price. This is market clearing price from the last round of play
+[# of Shares]: Number of shares of STOCK that you currently own. Each share that you own pays out a dividend at the end of each round. You CANNOT attempt to sell more shares than you own.
+[Current Cash]: The amount of CASH that you currently have. Your CASH earns interest that is paid out at the end of each period. You CANNOT attempt to buy shares worth more than the cash you have.
+[STOCK Value]: The value of your STOCK at the market price of the last round of play
+[Market Price]: This is market clearing price from the last round of play
 
 Using this information, you will submit orders to the market. All orders will be limit orders. For example, a limit order to BUY 1 STOCK @ 15 means that you would like to buy a STOCK at any price of 15 or less. Keep in mind the following points:
-Orders are not carried between periods
-SELL order prices must be greater than all BUY order prices + BUY order prices must be less than all SELL order prices
-You can only sell STOCK that you own and purchase STOCK with CASH you already have
-You are not required to submit orders every round and you may submit multiple orders each round
+- Orders are NOT carried between periods
+- SELL order prices must be greater than all BUY order prices + BUY order prices must be less than all SELL order prices
+- You can only sell STOCK that you own and purchase STOCK with CASH you already have
+- You are not required to submit orders every round and you may submit multiple orders each round
 - Depending on market conditions, you may need to cross the spread to get fills on buy/sell orders
 
-
-PRICE FORECASTING:
-You will be asked to submit your predictions for the market price this period, two periods in advance, 5 periods in advance, and 10 periods in advance. In addition to past market and portfolio history, you will be provided with the range in which your prediction should fall. Your prediction should be a non-negative, integer value. If your forecast is within 2.5 units of the actual price for each of the forecasted periods, then you will receive 5 units of cash as reward for each correct forecast.
+[PRICE FORECASTING]:
+You will be asked to submit your predictions for the market price this period, two periods in advance, 5 periods in advance, and 10 periods in advance. In addition to past market and portfolio history, you will be provided with the range in which your prediction should fall. Your prediction should be a non-negative, integer value. If your forecast is within 2.5 units of the actual price for each of the forecasted periods, then you will receive 5 units of cash at the end of the experiment as reward for each correct forecast.
 
 For example, if you forecast the market price of period 1 to be 14 and the actual price is 15, then you will be rewarded for your forecast. However, if the actual price is 18, then you will not receive the reward.
 
-LOTTERY SELECTION (4x):
-You will select between two lotteries, each with associated payoffs and probabilities. At the end of the experiment, one lottery will be selected at random and you will receive the outcome of the lottery. Thus, it is in your best interest to choose accordingly.
+Additionally, during the experiment, you will complete PRACTICE REFLECTION and EXPERIMENT REFLECTION:
 
-Additionally, you will complete PRACTICE REFLECTION and EXPERIMENT REFLECTION:
+[PRACTICE REFLECTION]:
+After completing the practice rounds, you will be asked to reflect on your practice experience. This reflection will be accessible to future versions of yourself during the main experiment. This can be helpful in passing along lessons learned to future versions of yourself.
 
-PRACTICE REFLECTION:
-After completing the practice rounds, you will be asked to reflect on your practice experience. This reflection will be accessible to future versions of yourself during the main experiment.
-
-EXPERIMENT REFLECTION:
-At the end of the experiment, you will be asked to reflect on your experience, including any insight and/or strategies that you may have developed. This will be helpful when the user asks for future market help.
+[EXPERIMENT REFLECTION]:
+At the end of the experiment, you will be asked to reflect on your experience, including any insight and/or strategies that you may have developed.
 
 To summarize, here are the key points:
-You will trade one STOCK for 30 trading periods using CASH
-You start with 100 units of CASH and 4 STOCKS
-Each period, STOCK provides a dividend of either 0.4 or 1.9, while interest provides 5% reward
-You will assist the user in each of the aforementioned stages
-After the last trading round (30), all of your shares are converted to 14 CASH each. If you buy shares for more than 14 as you get near round 30, it is possible those shares will be terminated at 14 if you cannot sell them, resulting in a loss.
+- You will trade one STOCK for 30 trading periods using CASH
+- You start with 168 units of CASH and 4 STOCKS
+- Each period, STOCK provides a dividend of either 0, 0.1, 1.3 or 1.4, while interest provides 5% reward
+- You will complete each of the aforementioned tasks
+- After the last trading round (30), all of your shares are converted to 14 CASH each. If you buy shares for more than 14 as you get near round 30, it is possible those shares will be terminated at 14 if you cannot sell them. You will keep any CASH you have at the end of the experiment.
 - You are trading against other subjects in the experiment who may be susceptible to the same influences as you and may not always make optimal decisions. They, however, are also trying to maximize their earnings.
 - Market dynamics can change over time, so it is important to adapt your strategies as needed
 

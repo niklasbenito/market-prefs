@@ -4,7 +4,7 @@ SESSION_CONFIGS = [
     dict(
         name='rounds',
         app_sequence=['consent', 'rounds', 'payment'],
-        num_demo_participants=2,
+        num_demo_participants=5,
         random_hist=False
     )
     , dict(
@@ -12,8 +12,8 @@ SESSION_CONFIGS = [
         app_sequence=['rounds'],
         num_demo_participants=3,
         interest_rate=.05,
-        div_amount='.4 1.00',
-        div_dist='.5 .5',
+        div_amount='0 0.1 1.3 1.4',
+        div_dist='.25 .25 .25 .25',
         margin_ratio=.5,
         margin_premium=0.1,
         margin_target_ratio=.6,
@@ -86,8 +86,8 @@ SESSION_CONFIG_DEFAULTS = dict(
     doc="",
     use_browser_bots=False,
     interest_rate='0.05',
-    div_amount='0.40 1.00',
-    div_dist='.5 .5',
+    div_amount='0 0.1 1.3 1.4',
+    div_dist='.25 .25 .25 .25',
     margin_ratio=.5,
     margin_premium=0.1,
     margin_target_ratio=.6,
@@ -95,7 +95,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     float_ratio_cap=1.0,
 
     endow_stock='4 4 4',
-    endow_worth=156.0,
+    endow_worth=224.0,
 
     initial_price=14.0,
     bonus_cap=None,
